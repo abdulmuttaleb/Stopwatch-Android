@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#FFFFF2</color>
+    <color name="colorPrimaryDark">#FFFFF2</color>
+    <color name="colorAccent">#791E94</color>
+    <color name="color_ivory">#FFFFF2</color>
+    <color name="color_med_turquoise">#41D3BD</color>
+    <color name="color_rebecca_purple">#791E94</color>
+    <color name="color_jelly_bean">#DE6449</color>
+    <color name="color_queen_blue">#407899</color>
+</resources>
