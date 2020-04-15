@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity"
+    tools:context=".view.MainActivity"
     android:background="@color/color_ivory"
     >
 
@@ -55,7 +55,7 @@
         android:text="STOP"
         android:textSize="30sp"
         android:textColor="@color/color_jelly_bean"
-        app:icon="@drawable/ic_play_arrow"
+        app:icon="@drawable/ic_stop"
         app:iconTint="@color/color_jelly_bean"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/btn_play_pause"
