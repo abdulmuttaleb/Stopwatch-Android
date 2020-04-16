@@ -3,6 +3,7 @@ package com.ahmad.stopwatch.view
 import android.os.Bundle
 import android.os.SystemClock
 import android.util.Log
+import android.view.View
 import android.view.WindowManager
 import android.widget.Chronometer
 import android.widget.TextView
@@ -12,6 +13,10 @@ import androidx.lifecycle.ViewModelProvider
 import com.ahmad.stopwatch.R
 import com.ahmad.stopwatch.viewmodel.StopwatchViewModel
 import com.ahmad.stopwatch.viewmodel.StopwatchViewModelFactory
+import com.google.android.gms.ads.AdListener
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.InterstitialAd
+import com.google.android.gms.ads.MobileAds
 import com.google.android.material.button.MaterialButton
 import org.joda.time.Duration
 import org.joda.time.Period
@@ -24,6 +29,7 @@ import java.text.MessageFormat.format
 import java.text.SimpleDateFormat
 import java.util.*
 
+const val AD_UNIT_ID = "ca-app-pub-9620521272164745/3440606585"
 
 class MainActivity : AppCompatActivity() {
 
@@ -32,6 +38,8 @@ class MainActivity : AppCompatActivity() {
     lateinit var resetMaterialButton: MaterialButton
 
     lateinit var stopwatchViewModel: StopwatchViewModel
+
+    private lateinit var afterTimerInterstitialAd: InterstitialAd
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,6 +55,22 @@ class MainActivity : AppCompatActivity() {
         playPauseMaterialButton = findViewById(R.id.btn_play_pause)
         resetMaterialButton = findViewById(R.id.btn_reset)
 
+        //init admob vars
+        MobileAds.initialize(this){}
+        afterTimerInterstitialAd = InterstitialAd(this).apply {
+            adUnitId = AD_UNIT_ID
+            adListener = object : AdListener(){
+                override fun onAdClosed() {
+                    afterTimerInterstitialAd.loadAd(AdRequest.Builder().build())
+                }
+
+                override fun onAdLoaded() {
+                    Log.e(TAG, "Ad loaded")
+                }
+            }
+        }
+        afterTimerInterstitialAd.loadAd(AdRequest.Builder().build())
+
         stopwatchViewModel = ViewModelProvider(this, StopwatchViewModelFactory(application)).get(StopwatchViewModel::class.java)
 
         stopwatchViewModel.state.observe(this, Observer {
@@ -59,6 +83,8 @@ class MainActivity : AppCompatActivity() {
                     playPauseMaterialButton.iconTint = getColorStateList(R.color.color_med_turquoise)
                     playPauseMaterialButton.setTextColor(getColorStateList(R.color.color_med_turquoise))
 
+                    resetMaterialButton.visibility = View.INVISIBLE
+
                 }
                 StopwatchViewModel.STATE.PAUSED ->{
                     playPauseMaterialButton.text = "PLAY"
@@ -68,6 +94,8 @@ class MainActivity : AppCompatActivity() {
                     playPauseMaterialButton.iconTint = getColorStateList(R.color.color_med_turquoise)
                     playPauseMaterialButton.setTextColor(getColorStateList(R.color.color_med_turquoise))
 
+                    resetMaterialButton.visibility = View.VISIBLE
+
                 }
                 StopwatchViewModel.STATE.RUNNING ->{
                     playPauseMaterialButton.text = "PAUSE"
@@ -76,6 +104,8 @@ class MainActivity : AppCompatActivity() {
                     playPauseMaterialButton.rippleColor = getColorStateList(R.color.color_mustard)
                     playPauseMaterialButton.iconTint = getColorStateList(R.color.color_mustard)
                     playPauseMaterialButton.setTextColor(getColorStateList(R.color.color_mustard))
+
+                    resetMaterialButton.visibility = View.VISIBLE
 
                 }
             }
@@ -105,6 +135,9 @@ class MainActivity : AppCompatActivity() {
 
         resetMaterialButton.setOnClickListener {
             stopwatchViewModel.stop()
+            if(afterTimerInterstitialAd.isLoaded){
+                afterTimerInterstitialAd.show()
+            }
         }
     }
 
