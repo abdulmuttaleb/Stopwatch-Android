@@ -86,6 +86,8 @@ class MainActivity : AppCompatActivity() {
                 PeriodFormatterBuilder()
                     .printZeroAlways()
                     .minimumPrintedDigits(2)
+                    .appendHours()
+                    .appendSeparator(":")
                     .appendMinutes()
                     .appendSeparator(":")
                     .appendSeconds()
