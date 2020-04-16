@@ -67,6 +67,23 @@ class MainActivity : AppCompatActivity() {
                 override fun onAdLoaded() {
                     Log.e(TAG, "Ad loaded")
                 }
+
+                override fun onAdFailedToLoad(errorCode: Int) {
+                    when(errorCode){
+                        AdRequest.ERROR_CODE_INTERNAL_ERROR ->{
+                            Log.e(TAG, "adLoadFailed -> Something happened internally; for instance, an invalid response was received from the ad server.")
+                        }
+                        AdRequest.ERROR_CODE_INVALID_REQUEST -> {
+                            Log.e(TAG, "adLoadFailed ->  The ad request was invalid; for instance, the ad unit ID was incorrect.")
+                        }
+                        AdRequest.ERROR_CODE_NETWORK_ERROR -> {
+                            Log.e(TAG, "adLoadFailed -> The ad request was unsuccessful due to network connectivity.")
+                        }
+                        AdRequest.ERROR_CODE_NO_FILL -> {
+                            Log.e(TAG, "adLoadFailed -> The ad request was successful, but no ad was returned due to lack of ad inventory.")
+                        }
+                    }
+                }
             }
         }
         afterTimerInterstitialAd.loadAd(AdRequest.Builder().build())
