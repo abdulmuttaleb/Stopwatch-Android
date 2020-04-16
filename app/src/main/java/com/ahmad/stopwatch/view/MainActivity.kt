@@ -2,8 +2,10 @@ package com.ahmad.stopwatch.view
 
 import android.os.Bundle
 import android.os.SystemClock
+import android.util.Log
 import android.view.WindowManager
 import android.widget.Chronometer
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -11,6 +13,11 @@ import com.ahmad.stopwatch.R
 import com.ahmad.stopwatch.viewmodel.StopwatchViewModel
 import com.ahmad.stopwatch.viewmodel.StopwatchViewModelFactory
 import com.google.android.material.button.MaterialButton
+import org.joda.time.Duration
+import org.joda.time.Period
+import org.joda.time.format.DateTimeFormat
+import org.joda.time.format.DateTimeFormatter
+import org.joda.time.format.PeriodFormatterBuilder
 import java.lang.String.format
 import java.text.DateFormat
 import java.text.MessageFormat.format
@@ -20,7 +27,7 @@ import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
-    lateinit var chronometer: Chronometer
+    lateinit var timerTextView: TextView
     lateinit var playPauseMaterialButton: MaterialButton
     lateinit var resetMaterialButton: MaterialButton
 
@@ -32,21 +39,16 @@ class MainActivity : AppCompatActivity() {
         window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
 
         activityInit()
+
     }
 
     private fun activityInit(){
-        chronometer = findViewById(R.id.tv_timer)
+        timerTextView = findViewById(R.id.tv_timer)
         playPauseMaterialButton = findViewById(R.id.btn_play_pause)
         resetMaterialButton = findViewById(R.id.btn_reset)
 
         stopwatchViewModel = ViewModelProvider(this, StopwatchViewModelFactory(application)).get(StopwatchViewModel::class.java)
 
-        chronometer.text = SimpleDateFormat("mm:ss.SSS").format(0)
-
-        chronometer.setOnChronometerTickListener { chronometer ->
-            val t = SystemClock.elapsedRealtime() - chronometer.base
-            chronometer.text = SimpleDateFormat("mm:ss.SSS").format(t)
-        }
         stopwatchViewModel.state.observe(this, Observer {
             when(it){
                 StopwatchViewModel.STATE.STOPPED ->{
@@ -79,12 +81,32 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
+        stopwatchViewModel.stopWatchTimeLiveData.observe(this, Observer {
+            val periodFormatter =
+                PeriodFormatterBuilder()
+                    .printZeroAlways()
+                    .minimumPrintedDigits(2)
+                    .appendMinutes()
+                    .appendSeparator(":")
+                    .appendSeconds()
+                    .appendSeparator(":")
+                    .appendMillis3Digit()
+                    .toFormatter()
+
+            val period = Period(it)
+            timerTextView.text = periodFormatter.print(period)
+        })
+
         playPauseMaterialButton.setOnClickListener {
-            stopwatchViewModel.run(chronometer)
+            stopwatchViewModel.run()
         }
 
         resetMaterialButton.setOnClickListener {
-            stopwatchViewModel.stop(chronometer)
+            stopwatchViewModel.stop()
         }
+    }
+
+    companion object{
+        const val TAG = "MainActivity"
     }
 }

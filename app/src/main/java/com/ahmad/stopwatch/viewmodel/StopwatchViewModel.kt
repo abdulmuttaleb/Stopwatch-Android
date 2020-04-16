@@ -1,6 +1,7 @@
 package com.ahmad.stopwatch.viewmodel
 
 import android.app.Application
+import android.os.Handler
 import android.os.SystemClock
 import android.util.Log
 import android.widget.Chronometer
@@ -12,39 +13,58 @@ import androidx.lifecycle.ViewModel
 class StopwatchViewModel(application: Application): AndroidViewModel(application) {
 
     var state = MutableLiveData<STATE>()
-    var pauseOffset: Long = 0
+    var stopWatchTimeLiveData = MutableLiveData<Long>().apply { postValue(0) }
+    //new implementation using handlers
+    var milliSeconds: Long = 0
+    var startTime:Long = 0
+    var pausedTime:Long = 0
+    var toDisplayTime:Long = 0
+
+    var handler = Handler()
+
+    var runnable = object : Runnable {
+        override fun run() {
+            milliSeconds = SystemClock.uptimeMillis() - startTime
+            toDisplayTime = pausedTime + milliSeconds
+            stopWatchTimeLiveData.postValue(toDisplayTime)
+            handler.postDelayed(this, 0)
+        }
+    }
     init {
         state.postValue(STATE.STOPPED)
     }
 
-    fun run(chronometer: Chronometer){
+    fun run(){
         when(state.value){
             //start chronometer
             STATE.STOPPED -> {
                 state.postValue(STATE.RUNNING)
-                chronometer.base = SystemClock.elapsedRealtime() - pauseOffset
-                chronometer.start()
+                startTime = SystemClock.uptimeMillis()
+                handler.postDelayed(runnable, 0)
             }
             //resume chronometer
             STATE.PAUSED -> {
                 state.postValue(STATE.RUNNING)
-                chronometer.base = SystemClock.elapsedRealtime() - pauseOffset
-                chronometer.start()
+                startTime = SystemClock.uptimeMillis()
+                handler.postDelayed(runnable, 0)
             }
             //pause chronometer
             STATE.RUNNING -> {
                 state.postValue(STATE.PAUSED)
-                chronometer.stop()
-                pauseOffset = SystemClock.elapsedRealtime() - chronometer.base
+                pausedTime += milliSeconds
+                handler.removeCallbacks(runnable)
             }
         }
     }
 
-    fun stop(chronometer: Chronometer){
+    fun stop(){
         state.postValue(STATE.STOPPED)
-        chronometer.stop()
-        chronometer.base = SystemClock.elapsedRealtime()
-        pauseOffset = 0
+        milliSeconds = 0
+        startTime = 0
+        pausedTime = 0
+        toDisplayTime = 0
+        stopWatchTimeLiveData.postValue(0)
+        handler.removeCallbacks(runnable)
     }
 
     sealed class STATE {
