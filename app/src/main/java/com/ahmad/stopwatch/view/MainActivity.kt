@@ -117,14 +117,13 @@ class MainActivity : AppCompatActivity() {
         resetMaterialButton.setOnClickListener {
             stopwatchViewModel.stop()
             stopwatchViewModel.numberOfTimesUsed += 1
-            if(stopwatchViewModel.numberOfTimesUsed == 2){
-                Log.e(TAG, "numberOfTimesUsed -> ${stopwatchViewModel.numberOfTimesUsed}")
+            Log.e(TAG, "numberOfTimesUsed -> ${stopwatchViewModel.numberOfTimesUsed}")
+            if(stopwatchViewModel.numberOfTimesUsed %3 == 0 && stopwatchViewModel.numberOfTimesUsed %6 != 0){
                 if(afterTimerInterstitialAd.isLoaded){
                     afterTimerInterstitialAd.show()
-                }else{
-                    stopwatchViewModel.numberOfTimesUsed = 0
-                    afterTimerInterstitialAd.loadAd(AdRequest.Builder().build())
                 }
+            }else if(stopwatchViewModel.numberOfTimesUsed %3 != 0 && stopwatchViewModel.numberOfTimesUsed %6 == 0){
+                showRewardedAd()
             }
         }
     }
@@ -139,7 +138,6 @@ class MainActivity : AppCompatActivity() {
             adListener = object : AdListener(){
                 override fun onAdClosed() {
                     afterTimerInterstitialAd.loadAd(AdRequest.Builder().build())
-                    stopwatchViewModel.numberOfTimesUsed = 0
                 }
 
                 override fun onAdLoaded() {
@@ -167,7 +165,7 @@ class MainActivity : AppCompatActivity() {
         afterTimerInterstitialAd.loadAd(AdRequest.Builder().build())
 
         //rewarded video setup
-//        afterTimerRewardedAd = createAndLoadRewardedAd()
+        afterTimerRewardedAd = createAndLoadRewardedAd()
     }
 
     private fun createAndLoadRewardedAd(): RewardedAd{
