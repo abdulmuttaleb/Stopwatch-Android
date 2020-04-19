@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.ahmad.stopwatch.R
+import com.ahmad.stopwatch.service.NotificationService
 import com.ahmad.stopwatch.viewmodel.StopwatchViewModel
 import com.ahmad.stopwatch.viewmodel.StopwatchViewModelFactory
 import com.google.android.gms.ads.AdListener
@@ -129,21 +130,9 @@ class MainActivity : AppCompatActivity() {
         })
 
         stopwatchViewModel.stopWatchTimeLiveData.observe(this, Observer {
-            val periodFormatter =
-                PeriodFormatterBuilder()
-                    .printZeroAlways()
-                    .minimumPrintedDigits(2)
-                    .appendHours()
-                    .appendSeparator(":")
-                    .appendMinutes()
-                    .appendSeparator(":")
-                    .appendSeconds()
-                    .appendSeparator(":")
-                    .appendMillis3Digit()
-                    .toFormatter()
-
             val period = Period(it)
-            timerTextView.text = periodFormatter.print(period)
+            val time = periodFormatter.print(period)
+            timerTextView.text = time
         })
 
         playPauseMaterialButton.setOnClickListener {
@@ -160,5 +149,18 @@ class MainActivity : AppCompatActivity() {
 
     companion object{
         const val TAG = "MainActivity"
+
+        val periodFormatter =
+            PeriodFormatterBuilder()
+                .printZeroAlways()
+                .minimumPrintedDigits(2)
+                .appendHours()
+                .appendSeparator(":")
+                .appendMinutes()
+                .appendSeparator(":")
+                .appendSeconds()
+                .appendSeparator(":")
+                .appendMillis3Digit()
+                .toFormatter()!!
     }
 }
