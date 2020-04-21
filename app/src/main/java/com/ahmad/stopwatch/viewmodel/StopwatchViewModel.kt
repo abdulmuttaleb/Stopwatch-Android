@@ -3,12 +3,8 @@ package com.ahmad.stopwatch.viewmodel
 import android.app.Application
 import android.os.Handler
 import android.os.SystemClock
-import android.util.Log
-import android.widget.Chronometer
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 
 class StopwatchViewModel(application: Application): AndroidViewModel(application) {
 
@@ -16,6 +12,7 @@ class StopwatchViewModel(application: Application): AndroidViewModel(application
     var stopWatchTimeLiveData = MutableLiveData<Long>().apply { postValue(0) }
 
     var numberOfTimesUsed = 0
+    var lastAdTypeShown: Int? = null
     //new implementation using handlers
     var milliSeconds: Long = 0
     var startTime:Long = 0
