@@ -12,7 +12,7 @@ class StopwatchViewModel(application: Application): AndroidViewModel(application
     var stopWatchTimeLiveData = MutableLiveData<Long>().apply { postValue(0) }
 
     var numberOfTimesUsed = 0
-    var lastAdTypeShown: Int? = null
+//    var lastAdTypeShown: Int? = null
     //new implementation using handlers
     var milliSeconds: Long = 0
     var startTime:Long = 0

@@ -12,6 +12,7 @@ import com.ahmad.stopwatch.R
 import com.ahmad.stopwatch.viewmodel.StopwatchViewModel
 import com.ahmad.stopwatch.viewmodel.StopwatchViewModelFactory
 import com.appodeal.ads.Appodeal
+import com.appodeal.ads.BannerCallbacks
 import com.appodeal.ads.InterstitialCallbacks
 import com.appodeal.ads.NonSkippableVideoCallbacks
 import com.google.android.material.button.MaterialButton
@@ -39,7 +40,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun appodealInit(){
-        val adTypes =  Appodeal.NON_SKIPPABLE_VIDEO or Appodeal.INTERSTITIAL
+        val adTypes =  Appodeal.NON_SKIPPABLE_VIDEO or Appodeal.INTERSTITIAL or Appodeal.BANNER_TOP
         val appodealApiKey = getString(R.string.appodeal_key)
         Appodeal.disableLocationPermissionCheck()
         Appodeal.initialize(this, appodealApiKey, adTypes )
@@ -64,7 +65,7 @@ class MainActivity : AppCompatActivity() {
 
             override fun onNonSkippableVideoFinished() {
                 Log.e(TAG,"nonSkippable: video finished")
-                stopwatchViewModel.lastAdTypeShown = Appodeal.NON_SKIPPABLE_VIDEO
+//                stopwatchViewModel.lastAdTypeShown = Appodeal.NON_SKIPPABLE_VIDEO
             }
 
             override fun onNonSkippableVideoShown() {
@@ -83,7 +84,7 @@ class MainActivity : AppCompatActivity() {
 
             override fun onInterstitialShown() {
                 Log.e(TAG, "interstitialCallback: shown")
-                stopwatchViewModel.lastAdTypeShown = Appodeal.INTERSTITIAL
+//                stopwatchViewModel.lastAdTypeShown = Appodeal.INTERSTITIAL
             }
 
             override fun onInterstitialShowFailed() {
@@ -106,6 +107,36 @@ class MainActivity : AppCompatActivity() {
                 Log.e(TAG, "interstitialCallback: expired")
             }
         })
+
+        Appodeal.setBannerCallbacks(object : BannerCallbacks {
+            override fun onBannerShowFailed() {
+                Log.e(TAG, "bannerAd: failed to show")
+            }
+
+            override fun onBannerShown() {
+                Log.e(TAG, "bannerAd: banner shown")
+            }
+
+            override fun onBannerLoaded(p0: Int, p1: Boolean) {
+                Log.e(TAG, "bannerAd: banner loaded")
+                Appodeal.show(this@MainActivity, Appodeal.BANNER_TOP)
+            }
+
+            override fun onBannerExpired() {
+                Log.e(TAG, "bannerAd: banner expired")
+                Appodeal.show(this@MainActivity, Appodeal.BANNER_TOP)
+            }
+
+            override fun onBannerClicked() {
+                Log.e(TAG, "bannerAd: banner clicked")
+            }
+
+            override fun onBannerFailedToLoad() {
+                Log.e(TAG, "bannerAd: failed to load")
+            }
+        })
+
+        Appodeal.show(this, Appodeal.BANNER_TOP)
     }
     private fun activityInit(){
         timerTextView = findViewById(R.id.tv_timer)
@@ -168,16 +199,17 @@ class MainActivity : AppCompatActivity() {
             stopwatchViewModel.stop()
             stopwatchViewModel.numberOfTimesUsed += 1
             Log.e(TAG, "numberOfTimesUsed -> ${stopwatchViewModel.numberOfTimesUsed}")
-            if(stopwatchViewModel.numberOfTimesUsed %2 == 0){
-                if(stopwatchViewModel.lastAdTypeShown == null || stopwatchViewModel.lastAdTypeShown == Appodeal.NON_SKIPPABLE_VIDEO) {
-                    if (Appodeal.isLoaded(Appodeal.INTERSTITIAL)) {
-                        Appodeal.show(this, Appodeal.INTERSTITIAL)
-                    }
-                }else if(stopwatchViewModel.lastAdTypeShown == Appodeal.INTERSTITIAL){
-                    if(Appodeal.isLoaded(Appodeal.NON_SKIPPABLE_VIDEO)){
-                        Appodeal.show(this, Appodeal.NON_SKIPPABLE_VIDEO)
-                    }
+            if(stopwatchViewModel.numberOfTimesUsed %3 == 0){
+                if (Appodeal.isLoaded(Appodeal.INTERSTITIAL)) {
+                    Appodeal.show(this, Appodeal.INTERSTITIAL)
                 }
+//                if(stopwatchViewModel.lastAdTypeShown == null || stopwatchViewModel.lastAdTypeShown == Appodeal.NON_SKIPPABLE_VIDEO) {
+//
+//                }else if(stopwatchViewModel.lastAdTypeShown == Appodeal.INTERSTITIAL){
+//                    if(Appodeal.isLoaded(Appodeal.NON_SKIPPABLE_VIDEO)){
+//                        Appodeal.show(this, Appodeal.NON_SKIPPABLE_VIDEO)
+//                    }
+//                }
             }
         }
     }
