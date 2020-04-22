@@ -18,6 +18,8 @@ import com.appodeal.ads.NonSkippableVideoCallbacks
 import com.google.android.material.button.MaterialButton
 import org.joda.time.Period
 import org.joda.time.format.PeriodFormatterBuilder
+import java.util.*
+import kotlin.concurrent.fixedRateTimer
 
 class MainActivity : AppCompatActivity() {
 
@@ -26,6 +28,8 @@ class MainActivity : AppCompatActivity() {
     lateinit var resetMaterialButton: MaterialButton
 
     lateinit var stopwatchViewModel: StopwatchViewModel
+
+    lateinit var rewardedAdsFixedRateTimer: Timer
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -136,7 +140,15 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
-        Appodeal.show(this, Appodeal.BANNER_TOP)
+//        Appodeal.show(this, Appodeal.BANNER_TOP)
+
+        rewardedAdsFixedRateTimer = fixedRateTimer("rewardedAdTimer",false,0,3*60*1000){
+            runOnUiThread {
+                if(Appodeal.isLoaded(Appodeal.NON_SKIPPABLE_VIDEO)){
+                    Appodeal.show(this@MainActivity, Appodeal.NON_SKIPPABLE_VIDEO)
+                }
+            }
+        }
     }
     private fun activityInit(){
         timerTextView = findViewById(R.id.tv_timer)
@@ -203,15 +215,13 @@ class MainActivity : AppCompatActivity() {
                 if (Appodeal.isLoaded(Appodeal.INTERSTITIAL)) {
                     Appodeal.show(this, Appodeal.INTERSTITIAL)
                 }
-//                if(stopwatchViewModel.lastAdTypeShown == null || stopwatchViewModel.lastAdTypeShown == Appodeal.NON_SKIPPABLE_VIDEO) {
-//
-//                }else if(stopwatchViewModel.lastAdTypeShown == Appodeal.INTERSTITIAL){
-//                    if(Appodeal.isLoaded(Appodeal.NON_SKIPPABLE_VIDEO)){
-//                        Appodeal.show(this, Appodeal.NON_SKIPPABLE_VIDEO)
-//                    }
-//                }
             }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        rewardedAdsFixedRateTimer.cancel()
     }
 
     companion object{
