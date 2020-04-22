@@ -11,10 +11,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.ahmad.stopwatch.R
 import com.ahmad.stopwatch.viewmodel.StopwatchViewModel
 import com.ahmad.stopwatch.viewmodel.StopwatchViewModelFactory
-import com.appodeal.ads.Appodeal
-import com.appodeal.ads.BannerCallbacks
-import com.appodeal.ads.InterstitialCallbacks
-import com.appodeal.ads.NonSkippableVideoCallbacks
+import com.appodeal.ads.*
 import com.google.android.material.button.MaterialButton
 import org.joda.time.Period
 import org.joda.time.format.PeriodFormatterBuilder
@@ -220,8 +217,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
-        super.onDestroy()
         rewardedAdsFixedRateTimer.cancel()
+        super.onDestroy()
     }
 
     companion object{
