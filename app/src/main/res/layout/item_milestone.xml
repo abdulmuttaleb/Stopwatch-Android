@@ -17,7 +17,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         android:layout_marginStart="12dp"
-        android:src="@drawable/ic_alarm_going"
+        android:background="@drawable/ic_alarm_going"
         />
 
     <com.google.android.material.textview.MaterialTextView

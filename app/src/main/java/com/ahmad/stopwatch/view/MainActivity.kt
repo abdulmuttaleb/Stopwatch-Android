@@ -8,7 +8,11 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.ahmad.stopwatch.R
+import com.ahmad.stopwatch.adapter.MilestoneRecyclerViewAdapter
+import com.ahmad.stopwatch.model.Milestone
 import com.ahmad.stopwatch.utils.Constants
 import com.ahmad.stopwatch.viewmodel.AdsViewModel
 import com.ahmad.stopwatch.viewmodel.AdsViewModelFactory
@@ -20,6 +24,7 @@ import com.google.android.gms.ads.rewarded.RewardedAd
 import com.google.android.gms.ads.rewarded.RewardedAdCallback
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
 import com.google.android.material.button.MaterialButton
+import org.joda.time.Duration
 import org.joda.time.Period
 import org.joda.time.format.PeriodFormatterBuilder
 import java.util.*
@@ -30,6 +35,8 @@ class MainActivity : AppCompatActivity() {
     lateinit var timerTextView: TextView
     lateinit var playPauseMaterialButton: MaterialButton
     lateinit var resetMaterialButton: MaterialButton
+    lateinit var milestonesRecyclerView: RecyclerView
+    lateinit var milestonesAdapter: MilestoneRecyclerViewAdapter
 
     lateinit var stopwatchViewModel: StopwatchViewModel
     lateinit var adsViewModel: AdsViewModel
@@ -49,10 +56,19 @@ class MainActivity : AppCompatActivity() {
         playPauseMaterialButton = findViewById(R.id.btn_play_pause)
         resetMaterialButton = findViewById(R.id.btn_reset)
         bannerAdView = findViewById(R.id.av_banner_top)
+        milestonesRecyclerView = findViewById(R.id.rv_milestones)
 
         stopwatchViewModel = ViewModelProvider(this, StopwatchViewModelFactory(application)).get(StopwatchViewModel::class.java)
         adsViewModel = ViewModelProvider(this, AdsViewModelFactory(application, this)).get(AdsViewModel::class.java)
         adsViewModel.setViewModelAdView(bannerAdView)
+
+        milestonesAdapter = MilestoneRecyclerViewAdapter()
+        val linearLayoutManager = LinearLayoutManager(this)
+        milestonesRecyclerView.layoutManager = linearLayoutManager
+        milestonesRecyclerView.adapter = milestonesAdapter
+
+        milestonesAdapter.milestones.add(Milestone(UUID.randomUUID().toString(),"Alarm 1", Duration(10000), true))
+        milestonesAdapter.milestones.add(Milestone(UUID.randomUUID().toString(),"Alarm 2", Duration(20000), false))
 
         stopwatchViewModel.state.observe(this, Observer {
             when(it){
