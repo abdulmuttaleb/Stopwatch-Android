@@ -9,9 +9,19 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.ahmad.stopwatch.R
+import com.ahmad.stopwatch.utils.Constants
+import com.ahmad.stopwatch.viewmodel.AdsViewModel
+import com.ahmad.stopwatch.viewmodel.AdsViewModelFactory
 import com.ahmad.stopwatch.viewmodel.StopwatchViewModel
 import com.ahmad.stopwatch.viewmodel.StopwatchViewModelFactory
-import com.appodeal.ads.*
+import com.google.android.gms.ads.AdListener
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.InterstitialAd
+import com.google.android.gms.ads.MobileAds
+import com.google.android.gms.ads.rewarded.RewardItem
+import com.google.android.gms.ads.rewarded.RewardedAd
+import com.google.android.gms.ads.rewarded.RewardedAdCallback
+import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
 import com.google.android.material.button.MaterialButton
 import org.joda.time.Period
 import org.joda.time.format.PeriodFormatterBuilder
@@ -25,8 +35,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var resetMaterialButton: MaterialButton
 
     lateinit var stopwatchViewModel: StopwatchViewModel
-
-    lateinit var rewardedAdsFixedRateTimer: Timer
+    lateinit var adsViewModel: AdsViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,127 +43,17 @@ class MainActivity : AppCompatActivity() {
 
         window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
 
-        appodealInit()
-
         activityInit()
 
-    }
-
-    private fun appodealInit(){
-        val adTypes =  Appodeal.NON_SKIPPABLE_VIDEO or Appodeal.INTERSTITIAL or Appodeal.BANNER_TOP
-        val appodealApiKey = getString(R.string.appodeal_key)
-        Appodeal.disableLocationPermissionCheck()
-        Appodeal.initialize(this, appodealApiKey, adTypes )
-
-        //callbacks
-        Appodeal.setNonSkippableVideoCallbacks(object : NonSkippableVideoCallbacks {
-            override fun onNonSkippableVideoLoaded(p0: Boolean) {
-                Log.e(TAG,"nonSkippable: video loaded")
-            }
-
-            override fun onNonSkippableVideoClosed(p0: Boolean) {
-                Log.e(TAG,"nonSkippable: video closed")
-            }
-
-            override fun onNonSkippableVideoShowFailed() {
-                Log.e(TAG,"nonSkippable: video show failed")
-            }
-
-            override fun onNonSkippableVideoExpired() {
-                Log.e(TAG,"nonSkippable: video expired")
-            }
-
-            override fun onNonSkippableVideoFinished() {
-                Log.e(TAG,"nonSkippable: video finished")
-//                stopwatchViewModel.lastAdTypeShown = Appodeal.NON_SKIPPABLE_VIDEO
-            }
-
-            override fun onNonSkippableVideoShown() {
-                Log.e(TAG,"nonSkippable: video shown")
-            }
-
-            override fun onNonSkippableVideoFailedToLoad() {
-                Log.e(TAG,"nonSkippable: video failed to load")
-            }
-        })
-
-        Appodeal.setInterstitialCallbacks(object : InterstitialCallbacks {
-            override fun onInterstitialLoaded(p0: Boolean) {
-                Log.e(TAG, "interstitialCallback: loaded")
-            }
-
-            override fun onInterstitialShown() {
-                Log.e(TAG, "interstitialCallback: shown")
-//                stopwatchViewModel.lastAdTypeShown = Appodeal.INTERSTITIAL
-            }
-
-            override fun onInterstitialShowFailed() {
-                Log.e(TAG, "interstitialCallback: show failed")
-            }
-
-            override fun onInterstitialClicked() {
-                Log.e(TAG, "interstitialCallback: clicked")
-            }
-
-            override fun onInterstitialFailedToLoad() {
-                Log.e(TAG, "interstitialCallback: failed to load")
-            }
-
-            override fun onInterstitialClosed() {
-                Log.e(TAG, "interstitialCallback: closed")
-            }
-
-            override fun onInterstitialExpired() {
-                Log.e(TAG, "interstitialCallback: expired")
-            }
-        })
-
-        Appodeal.setBannerCallbacks(object : BannerCallbacks {
-            override fun onBannerShowFailed() {
-                Log.e(TAG, "bannerAd: failed to show")
-            }
-
-            override fun onBannerShown() {
-                Log.e(TAG, "bannerAd: banner shown")
-            }
-
-            override fun onBannerLoaded(p0: Int, p1: Boolean) {
-                Log.e(TAG, "bannerAd: banner loaded")
-                Appodeal.show(this@MainActivity, Appodeal.BANNER_TOP)
-            }
-
-            override fun onBannerExpired() {
-                Log.e(TAG, "bannerAd: banner expired")
-                Appodeal.show(this@MainActivity, Appodeal.BANNER_TOP)
-            }
-
-            override fun onBannerClicked() {
-                Log.e(TAG, "bannerAd: banner clicked")
-            }
-
-            override fun onBannerFailedToLoad() {
-                Log.e(TAG, "bannerAd: failed to load")
-            }
-        })
-
-//        Appodeal.show(this, Appodeal.BANNER_TOP)
-
-        rewardedAdsFixedRateTimer = fixedRateTimer("rewardedAdTimer",false,0,3*60*1000){
-            runOnUiThread {
-                if(Appodeal.isLoaded(Appodeal.NON_SKIPPABLE_VIDEO)){
-                    Appodeal.show(this@MainActivity, Appodeal.NON_SKIPPABLE_VIDEO)
-                }
-            }
-        }
     }
     private fun activityInit(){
         timerTextView = findViewById(R.id.tv_timer)
         playPauseMaterialButton = findViewById(R.id.btn_play_pause)
         resetMaterialButton = findViewById(R.id.btn_reset)
 
-//       activityAdInit()
 
         stopwatchViewModel = ViewModelProvider(this, StopwatchViewModelFactory(application)).get(StopwatchViewModel::class.java)
+        adsViewModel = ViewModelProvider(this, AdsViewModelFactory(application, this)).get(AdsViewModel::class.java)
 
         stopwatchViewModel.state.observe(this, Observer {
             when(it){
@@ -209,16 +108,11 @@ class MainActivity : AppCompatActivity() {
             stopwatchViewModel.numberOfTimesUsed += 1
             Log.e(TAG, "numberOfTimesUsed -> ${stopwatchViewModel.numberOfTimesUsed}")
             if(stopwatchViewModel.numberOfTimesUsed %3 == 0){
-                if (Appodeal.isLoaded(Appodeal.INTERSTITIAL)) {
-                    Appodeal.show(this, Appodeal.INTERSTITIAL)
+                if (adsViewModel.mInterstitialAd.isLoaded) {
+                    adsViewModel.mInterstitialAd.show()
                 }
             }
         }
-    }
-
-    override fun onDestroy() {
-        rewardedAdsFixedRateTimer.cancel()
-        super.onDestroy()
     }
 
     companion object{

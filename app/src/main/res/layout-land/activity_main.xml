@@ -4,10 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.MainActivity"
-    android:background="@color/color_ivory"
+    android:background="@android:color/white"
     android:keepScreenOn="true"
-    >
+    tools:context=".view.MainActivity">
 
     <TextView
         android:id="@+id/tv_timer"
@@ -28,8 +27,8 @@
         android:layout_width="334dp"
         android:layout_height="0dp"
         android:layout_marginStart="40dp"
-        android:layout_marginEnd="40dp"
         android:layout_marginTop="20dp"
+        android:layout_marginEnd="40dp"
         android:layout_marginBottom="20dp"
         android:background="@drawable/border"
         android:paddingBottom="20dp"
@@ -49,14 +48,14 @@
         android:layout_marginEnd="6dp"
         android:text="Add Milestone"
         android:textColor="@color/color_rebecca_purple"
-        app:strokeColor="@color/color_rebecca_purple"
-        app:rippleColor="@color/color_rebecca_purple"
         app:layout_constraintBottom_toBottomOf="@id/rv_milestones"
         app:layout_constraintEnd_toEndOf="@id/rv_milestones"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@id/rv_milestones"
         app:layout_constraintTop_toTopOf="@id/rv_milestones"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintVertical_bias="1.0"
+        app:rippleColor="@color/color_rebecca_purple"
+        app:strokeColor="@color/color_rebecca_purple" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_play_pause"
