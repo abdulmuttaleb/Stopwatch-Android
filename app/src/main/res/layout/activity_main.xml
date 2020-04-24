@@ -7,7 +7,18 @@
     tools:context=".view.MainActivity"
     android:keepScreenOn="true"
     >
-
+    
+    <com.google.android.gms.ads.AdView
+        xmlns:ads="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/av_banner_top"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        ads:adSize="BANNER"
+        ads:adUnitId="ca-app-pub-9620521272164745/4836075581"
+        />
     <TextView
         android:id="@+id/tv_timer"
         android:layout_width="wrap_content"

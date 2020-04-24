@@ -14,10 +14,7 @@ import com.ahmad.stopwatch.viewmodel.AdsViewModel
 import com.ahmad.stopwatch.viewmodel.AdsViewModelFactory
 import com.ahmad.stopwatch.viewmodel.StopwatchViewModel
 import com.ahmad.stopwatch.viewmodel.StopwatchViewModelFactory
-import com.google.android.gms.ads.AdListener
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.InterstitialAd
-import com.google.android.gms.ads.MobileAds
+import com.google.android.gms.ads.*
 import com.google.android.gms.ads.rewarded.RewardItem
 import com.google.android.gms.ads.rewarded.RewardedAd
 import com.google.android.gms.ads.rewarded.RewardedAdCallback
@@ -36,6 +33,7 @@ class MainActivity : AppCompatActivity() {
 
     lateinit var stopwatchViewModel: StopwatchViewModel
     lateinit var adsViewModel: AdsViewModel
+    lateinit var bannerAdView: AdView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,10 +48,11 @@ class MainActivity : AppCompatActivity() {
         timerTextView = findViewById(R.id.tv_timer)
         playPauseMaterialButton = findViewById(R.id.btn_play_pause)
         resetMaterialButton = findViewById(R.id.btn_reset)
-
+        bannerAdView = findViewById(R.id.av_banner_top)
 
         stopwatchViewModel = ViewModelProvider(this, StopwatchViewModelFactory(application)).get(StopwatchViewModel::class.java)
         adsViewModel = ViewModelProvider(this, AdsViewModelFactory(application, this)).get(AdsViewModel::class.java)
+        adsViewModel.setViewModelAdView(bannerAdView)
 
         stopwatchViewModel.state.observe(this, Observer {
             when(it){

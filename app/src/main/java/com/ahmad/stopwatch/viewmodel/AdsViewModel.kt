@@ -6,10 +6,7 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.AndroidViewModel
 import com.ahmad.stopwatch.utils.Constants
-import com.google.android.gms.ads.AdListener
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.InterstitialAd
-import com.google.android.gms.ads.MobileAds
+import com.google.android.gms.ads.*
 import com.google.android.gms.ads.rewarded.RewardItem
 import com.google.android.gms.ads.rewarded.RewardedAd
 import com.google.android.gms.ads.rewarded.RewardedAdCallback
@@ -24,9 +21,11 @@ class AdsViewModel(application: Application, val activity: AppCompatActivity): A
     //admob vars
     lateinit var mInterstitialAd: InterstitialAd
     lateinit var mRewardedAd: RewardedAd
+    lateinit var adView:AdView
 
     private val interstitialId = Constants.ADMOB_INTERSTITIAL
     private val rewardedId = Constants.ADMOB_REWARDED
+    private val bannerId = Constants.ADMOB_BANNER
 
     private val context = application.applicationContext
     init {
@@ -141,6 +140,11 @@ class AdsViewModel(application: Application, val activity: AppCompatActivity): A
 
             mRewardedAd.show(activity, adCallBack)
         }
+    }
+
+    fun setViewModelAdView(adView: AdView){
+        this.adView = adView
+        adView.loadAd(AdRequest.Builder().build())
     }
 
     companion object{
