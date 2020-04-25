@@ -114,13 +114,6 @@ class MainActivity : AppCompatActivity() {
 
         resetMaterialButton.setOnClickListener {
             stopwatchViewModel.stop()
-//            stopwatchViewModel.numberOfTimesUsed += 1
-//            Log.e(TAG, "numberOfTimesUsed -> ${stopwatchViewModel.numberOfTimesUsed}")
-//            if(stopwatchViewModel.numberOfTimesUsed %3 == 0){
-//                if (adsViewModel.mInterstitialAd.isLoaded) {
-//                    adsViewModel.mInterstitialAd.show()
-//                }
-//            }
         }
     }
 
