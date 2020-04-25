@@ -13,22 +13,16 @@ import androidx.recyclerview.widget.RecyclerView
 import com.ahmad.stopwatch.R
 import com.ahmad.stopwatch.adapter.MilestoneRecyclerViewAdapter
 import com.ahmad.stopwatch.model.Milestone
-import com.ahmad.stopwatch.utils.Constants
 import com.ahmad.stopwatch.viewmodel.AdsViewModel
 import com.ahmad.stopwatch.viewmodel.AdsViewModelFactory
 import com.ahmad.stopwatch.viewmodel.StopwatchViewModel
 import com.ahmad.stopwatch.viewmodel.StopwatchViewModelFactory
 import com.google.android.gms.ads.*
-import com.google.android.gms.ads.rewarded.RewardItem
-import com.google.android.gms.ads.rewarded.RewardedAd
-import com.google.android.gms.ads.rewarded.RewardedAdCallback
-import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
 import com.google.android.material.button.MaterialButton
 import org.joda.time.Duration
 import org.joda.time.Period
 import org.joda.time.format.PeriodFormatterBuilder
 import java.util.*
-import kotlin.concurrent.fixedRateTimer
 
 class MainActivity : AppCompatActivity() {
 
@@ -120,13 +114,24 @@ class MainActivity : AppCompatActivity() {
 
         resetMaterialButton.setOnClickListener {
             stopwatchViewModel.stop()
-            stopwatchViewModel.numberOfTimesUsed += 1
-            Log.e(TAG, "numberOfTimesUsed -> ${stopwatchViewModel.numberOfTimesUsed}")
-            if(stopwatchViewModel.numberOfTimesUsed %3 == 0){
-                if (adsViewModel.mInterstitialAd.isLoaded) {
-                    adsViewModel.mInterstitialAd.show()
+//            stopwatchViewModel.numberOfTimesUsed += 1
+//            Log.e(TAG, "numberOfTimesUsed -> ${stopwatchViewModel.numberOfTimesUsed}")
+//            if(stopwatchViewModel.numberOfTimesUsed %3 == 0){
+//                if (adsViewModel.mInterstitialAd.isLoaded) {
+//                    adsViewModel.mInterstitialAd.show()
+//                }
+//            }
+        }
+    }
+
+    override fun onBackPressed() {
+        if(adsViewModel.mInterstitialAd.isLoaded){
+            adsViewModel.mInterstitialAd.adListener = object : AdListener() {
+                override fun onAdClosed() {
+                    finish()
                 }
             }
+            adsViewModel.mInterstitialAd.show()
         }
     }
 

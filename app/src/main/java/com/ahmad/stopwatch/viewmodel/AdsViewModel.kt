@@ -16,7 +16,7 @@ import kotlin.concurrent.fixedRateTimer
 
 class AdsViewModel(application: Application, val activity: AppCompatActivity): AndroidViewModel(application) {
 
-    lateinit var rewardedAdsFixedRateTimer: Timer
+//    lateinit var rewardedAdsFixedRateTimer: Timer
 
     //admob vars
     lateinit var mInterstitialAd: InterstitialAd
@@ -28,6 +28,9 @@ class AdsViewModel(application: Application, val activity: AppCompatActivity): A
     private val bannerId = Constants.ADMOB_BANNER
 
     private val context = application.applicationContext
+
+    private var firstOpened = true
+
     init {
         activityAdInit()
     }
@@ -46,6 +49,10 @@ class AdsViewModel(application: Application, val activity: AppCompatActivity): A
 
                 override fun onAdLoaded() {
                     Log.e(TAG, "interstitialAd: Ad loaded")
+                    if (firstOpened){
+                        mInterstitialAd.show()
+                        firstOpened=false
+                    }
                 }
 
                 override fun onAdFailedToLoad(errorCode: Int) {
@@ -68,14 +75,16 @@ class AdsViewModel(application: Application, val activity: AppCompatActivity): A
         }
         mInterstitialAd.loadAd(AdRequest.Builder().build())
 
-        //rewarded video setup
-        mRewardedAd = createAndLoadRewardedAd()
+        mInterstitialAd.show()
 
-        rewardedAdsFixedRateTimer = fixedRateTimer("rewardedAdTimer",false,0,3*60*1000){
-            activity.runOnUiThread {
-                showRewardedAd()
-            }
-        }
+        //rewarded video setup
+//        mRewardedAd = createAndLoadRewardedAd()
+
+//        rewardedAdsFixedRateTimer = fixedRateTimer("rewardedAdTimer",false,0,3*60*1000){
+//            activity.runOnUiThread {
+//                showRewardedAd()
+//            }
+//        }
     }
 
     private fun createAndLoadRewardedAd(): RewardedAd{
