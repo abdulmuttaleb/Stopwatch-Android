@@ -38,6 +38,10 @@ class AdsViewModel(application: Application, val activity: AppCompatActivity): A
     private fun activityAdInit(){
         //init admob vars
         MobileAds.initialize(context){}
+        val requestConfiguration = RequestConfiguration.Builder()
+            .setTestDeviceIds(arrayListOf("A74E4A39F8E3BE72808D7887B6FB9C38"))
+            .build()
+        MobileAds.setRequestConfiguration(requestConfiguration)
         //interstitial ad setup
         mInterstitialAd = InterstitialAd(context).apply {
             adUnitId = interstitialId
