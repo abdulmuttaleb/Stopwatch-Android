@@ -33,6 +33,16 @@ class MilestoneRecyclerViewAdapter: RecyclerView.Adapter<MilestoneRecyclerViewAd
         holder.bindItem(milestones[position])
     }
 
+    fun addToMilestones(milestone: Milestone){
+        milestones.add(milestone)
+        notifyDataSetChanged()
+    }
+
+    fun clearMilestones(){
+        milestones.clear()
+        notifyDataSetChanged()
+    }
+
     inner class MilestoneViewHolder(itemView: View):RecyclerView.ViewHolder(itemView){
         var nameTextView:TextView = itemView.findViewById(R.id.tv_name)
         var iconImageView:ImageView = itemView.findViewById(R.id.iv_alarm)

@@ -1,5 +1,7 @@
 package com.ahmad.stopwatch.view
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.NumberPicker
@@ -45,6 +47,10 @@ class SelectTimerActivity : AppCompatActivity(){
 
         addButton.setOnClickListener {
             val milestone = compriseMilestone()
+            val returnIntent = Intent()
+            returnIntent.putExtra("milestone",milestone)
+            setResult(Activity.RESULT_OK, returnIntent)
+            finish()
         }
     }
 

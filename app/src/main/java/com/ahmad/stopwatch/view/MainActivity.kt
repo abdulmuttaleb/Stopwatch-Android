@@ -1,5 +1,6 @@
 package com.ahmad.stopwatch.view
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
@@ -65,9 +66,6 @@ class MainActivity : AppCompatActivity() {
         milestonesRecyclerView.layoutManager = linearLayoutManager
         milestonesRecyclerView.adapter = milestonesAdapter
 
-        milestonesAdapter.milestones.add(Milestone(UUID.randomUUID().toString(),"Alarm 1", Period(10000), true))
-        milestonesAdapter.milestones.add(Milestone(UUID.randomUUID().toString(),"Alarm 2", Period(20000), false))
-
         stopwatchViewModel.state.observe(this, Observer {
             when(it){
                 StopwatchViewModel.STATE.STOPPED ->{
@@ -122,7 +120,7 @@ class MainActivity : AppCompatActivity() {
 
         addMilestoneButton.setOnClickListener {
             val intent = Intent(this, SelectTimerActivity::class.java)
-            startActivity(intent)
+            startActivityForResult(intent, TIMER_REQUEST_CODE)
         }
     }
 
@@ -137,7 +135,16 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if(requestCode == TIMER_REQUEST_CODE && resultCode == Activity.RESULT_OK){
+            val milestone = data!!.extras!!.getSerializable("milestone") as Milestone
+            milestonesAdapter.addToMilestones(milestone)
+        }
+    }
+
     companion object{
         const val TAG = "MainActivity"
+        const val TIMER_REQUEST_CODE = 1
     }
 }
