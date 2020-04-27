@@ -1,6 +1,8 @@
 package com.ahmad.stopwatch.view
 
+import android.content.Intent
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import android.view.View
 import android.view.WindowManager
@@ -13,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.ahmad.stopwatch.R
 import com.ahmad.stopwatch.adapter.MilestoneRecyclerViewAdapter
 import com.ahmad.stopwatch.model.Milestone
+import com.ahmad.stopwatch.utils.Constants
 import com.ahmad.stopwatch.viewmodel.AdsViewModel
 import com.ahmad.stopwatch.viewmodel.AdsViewModelFactory
 import com.ahmad.stopwatch.viewmodel.StopwatchViewModel
@@ -31,6 +34,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var resetMaterialButton: MaterialButton
     lateinit var milestonesRecyclerView: RecyclerView
     lateinit var milestonesAdapter: MilestoneRecyclerViewAdapter
+    lateinit var addMilestoneButton: MaterialButton
 
     lateinit var stopwatchViewModel: StopwatchViewModel
     lateinit var adsViewModel: AdsViewModel
@@ -39,7 +43,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
         window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
 
         activityInit()
@@ -51,6 +54,7 @@ class MainActivity : AppCompatActivity() {
         resetMaterialButton = findViewById(R.id.btn_reset)
         bannerAdView = findViewById(R.id.av_banner_top)
         milestonesRecyclerView = findViewById(R.id.rv_milestones)
+        addMilestoneButton = findViewById(R.id.btn_add_milestone)
 
         stopwatchViewModel = ViewModelProvider(this, StopwatchViewModelFactory(application)).get(StopwatchViewModel::class.java)
         adsViewModel = ViewModelProvider(this, AdsViewModelFactory(application, this)).get(AdsViewModel::class.java)
@@ -61,8 +65,8 @@ class MainActivity : AppCompatActivity() {
         milestonesRecyclerView.layoutManager = linearLayoutManager
         milestonesRecyclerView.adapter = milestonesAdapter
 
-        milestonesAdapter.milestones.add(Milestone(UUID.randomUUID().toString(),"Alarm 1", Duration(10000), true))
-        milestonesAdapter.milestones.add(Milestone(UUID.randomUUID().toString(),"Alarm 2", Duration(20000), false))
+        milestonesAdapter.milestones.add(Milestone(UUID.randomUUID().toString(),"Alarm 1", Period(10000), true))
+        milestonesAdapter.milestones.add(Milestone(UUID.randomUUID().toString(),"Alarm 2", Period(20000), false))
 
         stopwatchViewModel.state.observe(this, Observer {
             when(it){
@@ -104,7 +108,7 @@ class MainActivity : AppCompatActivity() {
 
         stopwatchViewModel.stopWatchTimeLiveData.observe(this, Observer {
             val period = Period(it)
-            val time = periodFormatter.print(period)
+            val time = Constants.periodFormatter.print(period)
             timerTextView.text = time
         })
 
@@ -114,6 +118,11 @@ class MainActivity : AppCompatActivity() {
 
         resetMaterialButton.setOnClickListener {
             stopwatchViewModel.stop()
+        }
+
+        addMilestoneButton.setOnClickListener {
+            val intent = Intent(this, SelectTimerActivity::class.java)
+            startActivity(intent)
         }
     }
 
@@ -130,18 +139,5 @@ class MainActivity : AppCompatActivity() {
 
     companion object{
         const val TAG = "MainActivity"
-
-        val periodFormatter =
-            PeriodFormatterBuilder()
-                .printZeroAlways()
-                .minimumPrintedDigits(2)
-                .appendHours()
-                .appendSeparator(":")
-                .appendMinutes()
-                .appendSeparator(":")
-                .appendSeconds()
-                .appendSeparator(":")
-                .appendMillis3Digit()
-                .toFormatter()!!
     }
 }

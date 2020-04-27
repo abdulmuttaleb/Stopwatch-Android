@@ -1,5 +1,7 @@
 package com.ahmad.stopwatch.utils
 
+import org.joda.time.format.PeriodFormatterBuilder
+
 object Constants {
     const val ADMOB_INTERSTITIAL_TEST = "ca-app-pub-3940256099942544/1033173712"
     const val ADMOB_REWARDED_TEST = "ca-app-pub-3940256099942544/5224354917"
@@ -8,4 +10,17 @@ object Constants {
     const val ADMOB_INTERSTITIAL = "ca-app-pub-9620521272164745/3392020022"
     const val ADMOB_REWARDED = "ca-app-pub-9620521272164745/8483483034"
     const val ADMOB_BANNER = "ca-app-pub-9620521272164745/4836075581"
+
+    val periodFormatter =
+        PeriodFormatterBuilder()
+            .printZeroAlways()
+            .minimumPrintedDigits(2)
+            .appendHours()
+            .appendSeparator(":")
+            .appendMinutes()
+            .appendSeparator(":")
+            .appendSeconds()
+            .appendSeparator(":")
+            .appendMillis3Digit()
+            .toFormatter()!!
 }
