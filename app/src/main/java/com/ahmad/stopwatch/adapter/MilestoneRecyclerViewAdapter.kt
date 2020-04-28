@@ -9,6 +9,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.ahmad.stopwatch.R
 import com.ahmad.stopwatch.model.Milestone
+import com.ahmad.stopwatch.utils.Constants
 
 class MilestoneRecyclerViewAdapter: RecyclerView.Adapter<MilestoneRecyclerViewAdapter.MilestoneViewHolder>(){
 
@@ -45,10 +46,12 @@ class MilestoneRecyclerViewAdapter: RecyclerView.Adapter<MilestoneRecyclerViewAd
 
     inner class MilestoneViewHolder(itemView: View):RecyclerView.ViewHolder(itemView){
         var nameTextView:TextView = itemView.findViewById(R.id.tv_name)
+        var timeTextView:TextView = itemView.findViewById(R.id.tv_time)
         var iconImageView:ImageView = itemView.findViewById(R.id.iv_alarm)
 
         fun bindItem(milestone: Milestone) {
             nameTextView.text = milestone.name
+            timeTextView.text = Constants.periodFormatter.print(milestone.period)
             when (milestone.passed) {
                 true -> {
                     iconImageView.background = context.getDrawable(R.drawable.ic_alarm_done)
@@ -56,6 +59,10 @@ class MilestoneRecyclerViewAdapter: RecyclerView.Adapter<MilestoneRecyclerViewAd
                 false -> {
                     iconImageView.background = context.getDrawable(R.drawable.ic_alarm_going)
                 }
+            }
+
+            if(milestone.name.isEmpty()){
+                nameTextView.visibility = View.GONE
             }
         }
     }
