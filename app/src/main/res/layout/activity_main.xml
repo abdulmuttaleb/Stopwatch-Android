@@ -54,13 +54,13 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_add_milestone"
-        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        style="@style/MaterialButtonPurple"
         android:layout_width="0dp"
         android:layout_height="50dp"
         android:layout_marginStart="6dp"
         android:layout_marginEnd="6dp"
         android:text="Add Milestone"
-        android:textColor="@color/color_rebecca_purple"
+        android:textColor="@android:color/white"
         app:strokeColor="@color/color_rebecca_purple"
         app:rippleColor="@color/color_rebecca_purple"
         app:layout_constraintBottom_toBottomOf="@id/rv_milestones"

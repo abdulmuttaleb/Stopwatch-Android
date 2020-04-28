@@ -6,6 +6,7 @@
     <color name="color_ivory">#FFFFF2</color>
     <color name="color_med_turquoise">#41D3BD</color>
     <color name="color_rebecca_purple">#791E94</color>
+    <color name="color_rebecca_purple_disabled">#BC8EC9</color>
     <color name="color_jelly_bean">#DE6449</color>
     <color name="color_mustard">#FFC857</color>
 </resources>
