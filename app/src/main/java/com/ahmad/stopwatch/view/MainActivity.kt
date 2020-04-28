@@ -9,6 +9,7 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -110,6 +111,10 @@ class MainActivity : AppCompatActivity() {
             timerTextView.text = time
         })
 
+        stopwatchViewModel.milestonesLiveData.observe(this, Observer {
+            milestonesAdapter.milestones = it
+        })
+
         playPauseMaterialButton.setOnClickListener {
             stopwatchViewModel.run()
         }
@@ -139,7 +144,7 @@ class MainActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         if(requestCode == TIMER_REQUEST_CODE && resultCode == Activity.RESULT_OK){
             val milestone = data!!.extras!!.getSerializable("milestone") as Milestone
-            milestonesAdapter.addToMilestones(milestone)
+            stopwatchViewModel.addMilestone(milestone)
         }
     }
 
@@ -147,4 +152,5 @@ class MainActivity : AppCompatActivity() {
         const val TAG = "MainActivity"
         const val TIMER_REQUEST_CODE = 1
     }
+
 }

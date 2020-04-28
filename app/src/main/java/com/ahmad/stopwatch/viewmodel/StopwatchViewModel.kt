@@ -5,11 +5,14 @@ import android.os.Handler
 import android.os.SystemClock
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import com.ahmad.stopwatch.model.Milestone
 
 class StopwatchViewModel(application: Application): AndroidViewModel(application) {
 
     var state = MutableLiveData<STATE>(STATE.STOPPED)
     var stopWatchTimeLiveData = MutableLiveData<Long>().apply { postValue(0) }
+
+    var milestonesLiveData = MutableLiveData<ArrayList<Milestone>>().apply { postValue(arrayListOf()) }
 
     //new implementation using handlers
     var milliSeconds: Long = 0
@@ -62,6 +65,11 @@ class StopwatchViewModel(application: Application): AndroidViewModel(application
         toDisplayTime = 0
         stopWatchTimeLiveData.postValue(0)
         handler.removeCallbacks(runnable)
+    }
+
+    fun addMilestone(milestone: Milestone) {
+        milestonesLiveData.value!!.add(milestone)
+        milestonesLiveData.value = milestonesLiveData.value
     }
 
     sealed class STATE {
