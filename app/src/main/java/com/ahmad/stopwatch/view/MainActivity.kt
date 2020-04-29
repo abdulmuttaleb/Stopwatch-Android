@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.ahmad.stopwatch.R
@@ -107,7 +108,7 @@ class MainActivity : AppCompatActivity() {
             val period = Period(it)
             val time = Constants.periodFormatter.print(period)
             timerTextView.text = time
-            //TODO: check if this period is
+            checkIfPeriodHits(it)
         })
 
         stopwatchViewModel.milestonesLiveData.observe(this, Observer {
@@ -127,6 +128,19 @@ class MainActivity : AppCompatActivity() {
             intent.putExtra("milestonesSize", stopwatchViewModel.milestonesLiveData.value!!.size)
             startActivityForResult(intent, TIMER_REQUEST_CODE)
         }
+    }
+
+    fun checkIfPeriodHits(millis:Long){
+            stopwatchViewModel.milestonesLiveData.value
+                ?.filter { !it.passed }
+                ?.forEach { milestone ->
+                    if(LongRange(milestone.period.toStandardDuration().millis-20L, milestone.period.toStandardDuration().millis+20L).contains(millis)){
+                        Log.e(TAG, "inRange: ${milestone.period.toStandardDuration().millis} and $millis")
+                        stopwatchViewModel.setMilestonePassed(milestone)
+                        //TODO: fire notification
+                    }
+                }
+
     }
 
     override fun onBackPressed() {

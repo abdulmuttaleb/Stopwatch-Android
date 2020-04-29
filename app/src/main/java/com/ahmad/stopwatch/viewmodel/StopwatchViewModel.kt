@@ -12,7 +12,7 @@ class StopwatchViewModel(application: Application): AndroidViewModel(application
     var state = MutableLiveData<STATE>(STATE.STOPPED)
     var stopWatchTimeLiveData = MutableLiveData<Long>().apply { postValue(0) }
 
-    var milestonesLiveData = MutableLiveData<ArrayList<Milestone>>().apply { postValue(arrayListOf()) }
+    var milestonesLiveData: MutableLiveData<ArrayList<Milestone>> = MutableLiveData(arrayListOf())
 
     //new implementation using handlers
     var milliSeconds: Long = 0
@@ -71,6 +71,13 @@ class StopwatchViewModel(application: Application): AndroidViewModel(application
     fun addMilestone(milestone: Milestone) {
         milestonesLiveData.value!!.add(milestone)
         milestonesLiveData.value = milestonesLiveData.value
+    }
+
+    fun setMilestonePassed(milestone: Milestone){
+        milestonesLiveData.value!!.find { it.id == milestone.id }.apply {
+            this?.passed = true
+            milestonesLiveData.value = milestonesLiveData.value
+        }
     }
 
     fun resetMilestones(){
