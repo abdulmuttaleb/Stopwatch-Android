@@ -78,7 +78,6 @@ class MainActivity : AppCompatActivity() {
                     playPauseMaterialButton.setTextColor(getColorStateList(R.color.color_med_turquoise))
 
                     resetMaterialButton.visibility = View.INVISIBLE
-
                 }
                 StopwatchViewModel.STATE.PAUSED ->{
                     playPauseMaterialButton.text = "PLAY"
@@ -100,7 +99,6 @@ class MainActivity : AppCompatActivity() {
                     playPauseMaterialButton.setTextColor(getColorStateList(R.color.color_mustard))
 
                     resetMaterialButton.visibility = View.VISIBLE
-
                 }
             }
         })
@@ -109,6 +107,7 @@ class MainActivity : AppCompatActivity() {
             val period = Period(it)
             val time = Constants.periodFormatter.print(period)
             timerTextView.text = time
+            //TODO: check if this period is
         })
 
         stopwatchViewModel.milestonesLiveData.observe(this, Observer {
@@ -125,6 +124,7 @@ class MainActivity : AppCompatActivity() {
 
         addMilestoneButton.setOnClickListener {
             val intent = Intent(this, SelectTimerActivity::class.java)
+            intent.putExtra("milestonesSize", stopwatchViewModel.milestonesLiveData.value!!.size)
             startActivityForResult(intent, TIMER_REQUEST_CODE)
         }
     }
@@ -137,6 +137,8 @@ class MainActivity : AppCompatActivity() {
                 }
             }
             adsViewModel.mInterstitialAd.show()
+        }else{
+            super.onBackPressed()
         }
     }
 
