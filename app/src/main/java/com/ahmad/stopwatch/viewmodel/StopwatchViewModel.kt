@@ -65,11 +65,16 @@ class StopwatchViewModel(application: Application): AndroidViewModel(application
         toDisplayTime = 0
         stopWatchTimeLiveData.postValue(0)
         handler.removeCallbacks(runnable)
+        resetMilestones()
     }
 
     fun addMilestone(milestone: Milestone) {
         milestonesLiveData.value!!.add(milestone)
         milestonesLiveData.value = milestonesLiveData.value
+    }
+
+    fun resetMilestones(){
+        milestonesLiveData.value!!.forEach { it.passed = false }.apply { milestonesLiveData.value = milestonesLiveData.value }
     }
 
     sealed class STATE {
