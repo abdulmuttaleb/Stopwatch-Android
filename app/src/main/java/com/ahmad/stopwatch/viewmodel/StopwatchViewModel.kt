@@ -1,6 +1,8 @@
 package com.ahmad.stopwatch.viewmodel
 
 import android.app.Application
+import android.app.NotificationManager
+import android.content.Context
 import android.os.Handler
 import android.os.SystemClock
 import androidx.lifecycle.AndroidViewModel
@@ -21,6 +23,8 @@ class StopwatchViewModel(application: Application): AndroidViewModel(application
     var toDisplayTime:Long = 0
 
     var handler = Handler()
+
+    private val context = getApplication<Application>().applicationContext
 
     var runnable = object : Runnable {
         override fun run() {
@@ -66,6 +70,7 @@ class StopwatchViewModel(application: Application): AndroidViewModel(application
         stopWatchTimeLiveData.postValue(0)
         handler.removeCallbacks(runnable)
         resetMilestones()
+        removeNotifications()
     }
 
     fun addMilestone(milestone: Milestone) {
@@ -82,6 +87,13 @@ class StopwatchViewModel(application: Application): AndroidViewModel(application
 
     fun resetMilestones(){
         milestonesLiveData.value!!.forEach { it.passed = false }.apply { milestonesLiveData.value = milestonesLiveData.value }
+    }
+
+
+
+    fun removeNotifications(){
+        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.cancelAll()
     }
 
     sealed class STATE {

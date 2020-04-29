@@ -1,7 +1,12 @@
 package com.ahmad.stopwatch.view
 
 import android.app.Activity
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
@@ -9,6 +14,8 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -138,11 +145,42 @@ class MainActivity : AppCompatActivity() {
                         Log.e(TAG, "inRange: ${milestone.period.toStandardDuration().millis} and $millis")
                         stopwatchViewModel.setMilestonePassed(milestone)
                         //TODO: fire notification
+                        showNotification(milestone)
                     }
                 }
 
     }
 
+    fun showNotification(milestone: Milestone){
+        val builder = NotificationCompat.Builder(this, CHANNEL_ID)
+            .setSmallIcon(R.mipmap.ic_launcher_foreground)
+            .setContentTitle("Timer")
+            .setContentText("${milestone.name} has passed")
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setContentIntent(null)
+            .setOnlyAlertOnce(true)
+
+        createNotificationChannel()
+
+        with(NotificationManagerCompat.from(this)){
+            notify(milestone.period.toStandardDuration().millis.toInt(), builder.build())
+        }
+
+
+    }
+
+    fun createNotificationChannel(){
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            val name = CHANNEL_NAME
+            val descriptionText = CHANNEL_DESC
+            val importance = NotificationManager.IMPORTANCE_DEFAULT
+            val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
+                description = descriptionText
+            }
+            val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
+        }
+    }
     override fun onBackPressed() {
         if(adsViewModel.mInterstitialAd.isLoaded){
             adsViewModel.mInterstitialAd.adListener = object : AdListener() {
@@ -167,6 +205,9 @@ class MainActivity : AppCompatActivity() {
     companion object{
         const val TAG = "MainActivity"
         const val TIMER_REQUEST_CODE = 1
+        const val CHANNEL_ID = "stopwatch_notification_channel"
+        const val CHANNEL_NAME = "Stopwatch Channel"
+        const val CHANNEL_DESC = "Channel for displaying notification of timers"
     }
 
 }
