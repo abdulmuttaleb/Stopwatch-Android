@@ -20,12 +20,15 @@ class SelectTimerActivity : AppCompatActivity(){
     lateinit var minutesNumberPicker: NumberPicker
     lateinit var hoursNumberPicker: NumberPicker
 
+    var passedNumber: Int = 0
+
     lateinit var nameEditText: AppCompatEditText
     lateinit var addButton:MaterialButton
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_select_timer)
+        passedNumber = intent.getIntExtra("milestonesSize", 0)
         activityInit()
     }
 
@@ -45,6 +48,8 @@ class SelectTimerActivity : AppCompatActivity(){
         hoursNumberPicker.minValue = 0
         hoursNumberPicker.maxValue = 99
 
+        nameEditText.setText("Timer ${passedNumber+1}")
+
         addButton.setOnClickListener {
             val milestone = compriseMilestone()
             val returnIntent = Intent()
@@ -54,7 +59,7 @@ class SelectTimerActivity : AppCompatActivity(){
         }
     }
 
-    fun compriseMilestone():Milestone{
+    private fun compriseMilestone():Milestone{
         val period = Period(hoursNumberPicker.value,minutesNumberPicker.value,secondsNumberPicker.value,0)
         return Milestone(UUID.randomUUID().toString().replace("-",""),
             if (nameEditText.text.toString().isEmpty()) {
